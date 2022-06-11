@@ -1,5 +1,5 @@
 {
-  "name": "@nem/matrix-2d",
+  "name": "@kk8787/matrix-2d",
   "version": "0.0.1",
   "description": "transform",
   "main": "dist/index.js",
@@ -39,8 +39,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@jest/types": "^27.5.1",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/node": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
@@ -54,6 +53,5 @@
     "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
     "typescript": "^4.7.3"
-  },
-  "dependencies": {}
+  }
 }
