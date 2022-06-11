@@ -5,19 +5,10 @@
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "strict": true,
-    "lib": [
-      "ESNext"
-    ],
-    "types": [
-      "node",
-      "jest"
-    ],
+    "lib": ["ESNext"],
+    "types": ["node", "jest"],
     "outDir": "dist"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "src/tests"
-  ]
+  "include": ["src"],
+  "exclude": ["src/tests"]
 }
