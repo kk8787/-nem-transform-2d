@@ -1,6 +1,6 @@
 {
   "name": "@kk8787/matrix-2d",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "transform",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
