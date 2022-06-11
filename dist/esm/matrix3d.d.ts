@@ -48,4 +48,4 @@ export declare class Matrix implements IMatrix {
     clone(): Matrix;
     copy(): Matrix;
 }
-//# sourceMappingURL=matrix.d.ts.map
+//# sourceMappingURL=matrix3d.d.ts.map
