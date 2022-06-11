@@ -18,3 +18,4 @@ __exportStar(require("./matrix"), exports);
 __exportStar(require("./transform"), exports);
 __exportStar(require("./vec"), exports);
 __exportStar(require("./utils"), exports);
+__exportStar(require("./mixin"), exports);

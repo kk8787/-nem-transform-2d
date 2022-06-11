@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Matrix = void 0;
-const transformation_matrix_1 = require("transformation-matrix");
-const transform_1 = require("./transform");
-const utilsPrivate_1 = require("./utilsPrivate");
+const utils_1 = require("./utils");
 class Matrix {
-    constructor(array) {
-        if (array) {
+    constructor(...array) {
+        if (array.length === 6) {
             this.a = array[0];
             this.b = array[1];
             this.c = array[2];
@@ -23,69 +21,93 @@ class Matrix {
             this.f = 0;
         }
     }
-    static identity() {
-        const mat = (0, transformation_matrix_1.identity)();
-        return new Matrix([mat.a, mat.b, mat.c, mat.d, mat.e, mat.f]);
+    static translation(vec) {
+        return new Matrix(1, 0, 0, 1, vec.x, vec.y);
     }
-    decompose() {
-        const transform = (0, transformation_matrix_1.decomposeTSR)(this);
-        const rot = transform.rotation.angle;
-        const scale = (transform.scale.sx + transform.scale.sy) / 2;
-        const tr = new transform_1.Transform({
-            translate: { x: transform.translate.tx, y: transform.translate.ty },
-            rotate: rot,
-            scale: scale,
+    static rotation(rad, origin = { x: 0, y: 0 }) {
+        const co = Math.cos(rad);
+        const si = Math.sin(rad);
+        return this.compose(this.translation(origin), new Matrix(co, si, -si, co, 0, 0), this.translation({ x: -origin.x, y: -origin.y }));
+    }
+    static rotationDeg(deg, origin = { x: 0, y: 0 }) {
+        return this.rotation((0, utils_1.degToRad)(deg), origin);
+    }
+    static scale(scale, origin = { x: 0, y: 0 }) {
+        return this.compose(this.translation(origin), new Matrix(scale.x, 0, 0, scale.y, 0, 0), this.translation({ x: -origin.x, y: -origin.y }));
+    }
+    static skew(vec) {
+        return new Matrix(1, Math.tan(vec.x), 0, Math.tan(vec.y), 1, 0);
+    }
+    static skewDeg(vec) {
+        return this.skew({
+            x: (0, utils_1.degToRad)(vec.x),
+            y: (0, utils_1.degToRad)(vec.y),
         });
-        return tr;
+    }
+    static identity() {
+        return new Matrix(1, 0, 0, 1, 0, 0);
+    }
+    static mul(m1, m2) {
+        return new Matrix(m1.a * m2.a + m1.c * m2.b, m1.b * m2.a + m1.d * m2.b, m1.a * m2.c + m1.c * m2.d, m1.b * m2.c + m1.d * m2.d, m1.a * m2.e + m1.c * m2.f + m1.e, m1.b * m2.e + m1.d * m2.f + m1.f);
+    }
+    static compose(...matrices) {
+        if (matrices.length === 0) {
+            throw new Error('0');
+        }
+        else if (matrices.length === 1) {
+            throw new Error('1');
+        }
+        let current = matrices[0];
+        for (let i = 1, len = matrices.length; i < len; i++) {
+            current = this.mul(current, matrices[i]);
+        }
+        // length > 1, type of current must be Matrix
+        return current;
     }
     inverse() {
-        return (0, utilsPrivate_1.convertMat)((0, transformation_matrix_1.inverse)(this));
-    }
-    isAffineMatrix() {
-        return (0, transformation_matrix_1.isAffineMatrix)(this);
+        const det = this.a * this.d - this.b * this.c;
+        return new Matrix(this.d / det, this.b / -det, this.c / -det, this.a / det, (this.d * this.e - this.c * this.f) / -det, (this.b * this.e - this.a * this.f) / det);
     }
     point(pt) {
-        return (0, transformation_matrix_1.applyToPoint)(this, pt);
+        return {
+            x: this.a * pt.x + this.c * pt.y + this.e,
+            y: this.b * pt.x + this.d * pt.y + this.f,
+        };
     }
     points(pts) {
         return pts.map((pt) => this.point(pt));
     }
-    translate(x, y) {
-        const trmat = (0, transformation_matrix_1.translate)(x, y);
-        return (0, utilsPrivate_1.convertMat)((0, transformation_matrix_1.compose)(this, trmat));
+    translate(vec) {
+        const trmat = Matrix.translation(vec);
+        return Matrix.mul(this, trmat);
     }
-    scale(sx, sy = sx, x = 0, y = 0) {
-        const scmat = (0, transformation_matrix_1.scale)(sx, sy, x, y);
-        return (0, utilsPrivate_1.convertMat)((0, transformation_matrix_1.compose)(this, scmat));
+    rotate(rad, origin = { x: 0, y: 0 }) {
+        const r = Matrix.rotation(rad, origin);
+        return Matrix.mul(this, r);
     }
-    rotate(rad, x = 0, y = 0) {
-        const rotmat = (0, transformation_matrix_1.rotate)(rad, x, y);
-        return (0, utilsPrivate_1.convertMat)((0, transformation_matrix_1.compose)(this, rotmat));
+    scale(scale, origin = { x: 0, y: 0 }) {
+        const s = Matrix.scale(scale, origin);
+        return Matrix.mul(this, s);
     }
-    rotateDeg(deg, x = 0, y = 0) {
+    skew(skew, origin = { x: 0, y: 0 }) {
+        const s = Matrix.scale(skew, origin);
+        return Matrix.mul(this, s);
+    }
+    rotateDeg(deg, origin = { x: 0, y: 0 }) {
         const rad = (deg * Math.PI) / 180;
-        return this.rotate(rad, x, y);
+        return this.rotate(rad, origin);
     }
     transform(...mats) {
-        return (0, utilsPrivate_1.convertMat)((0, transformation_matrix_1.compose)(this, ...mats));
+        return Matrix.compose(this, ...mats);
     }
     smooth(precision = 10000000000) {
-        return (0, utilsPrivate_1.convertMat)((0, transformation_matrix_1.smoothMatrix)(this, precision));
+        return new Matrix(Math.round(this.a * precision) / precision, Math.round(this.b * precision) / precision, Math.round(this.c * precision) / precision, Math.round(this.d * precision) / precision, Math.round(this.e * precision) / precision, Math.round(this.f * precision) / precision);
     }
-    toSVG() {
-        return (0, transformation_matrix_1.toSVG)(this);
-    }
-    toCSS() {
-        return (0, transformation_matrix_1.toCSS)(this);
-    }
-    toString() {
-        return (0, transformation_matrix_1.toString)(this);
-    }
-    fromTriangles(t1, t2) {
-        return (0, utilsPrivate_1.convertMat)((0, transformation_matrix_1.fromTriangles)(t1, t2));
+    toArray() {
+        return [this.a, this.b, this.c, this.d, this.e, this.f];
     }
     clone() {
-        return new Matrix([this.a, this.b, this.c, this.d, this.e, this.f]);
+        return new Matrix(this.a, this.b, this.c, this.d, this.e, this.f);
     }
     copy() {
         return this.clone();
