@@ -1,7 +1,7 @@
 {
   "name": "@kk8787/matrix-2d",
-  "version": "0.0.3",
-  "description": "transform",
+  "version": "0.0.4",
+  "description": "transform 2d",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",

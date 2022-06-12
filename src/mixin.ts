@@ -22,7 +22,7 @@ export function TransformMixin<T extends Constructor>(constructor: T) {
     get rotateDeg(): number {
       return radToDeg(this.rotate)
     }
-    static decompose(mat: IMatrix): Transform {
+    static decomposeTSR(mat: IMatrix): Transform {
       const { a, b, c, d, e, f } = mat
       let scaleX: number, scaleY: number, rotation: number
 

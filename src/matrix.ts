@@ -170,6 +170,10 @@ export class Matrix implements IMatrix {
     )
   }
 
+  mul(mat: IMatrix) {
+    return Matrix.mul(this, mat)
+  }
+
   toArray(): IMatrixArray {
     return [this.a, this.b, this.c, this.d, this.e, this.f]
   }

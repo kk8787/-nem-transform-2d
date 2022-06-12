@@ -42,12 +42,19 @@ describe('mixin', () => {
     expect(Matrix.mul(m1, m2)).toEqual(Matrix.identity())
   })
 
+  it('inverse', () => {
+    const m = new Matrix(1, 2, 3, 4, 5, 6)
+    const mi = m.inverse()
+    expect(m.mul(mi)).toEqual(Matrix.identity())
+    expect(mi.mul(m)).toEqual(Matrix.identity())
+  })
+
   it('decompose', () => {
     const tMat = Matrix.translation(new Vec(10, 12))
     const rMat = Matrix.rotation(Math.PI / 2)
     const sMat = Matrix.scale(new Vec(2, 3))
     const mat = Matrix.compose(tMat, sMat, rMat)
-    const tr = Transform.decompose(mat)
+    const tr = Transform.decomposeTSR(mat)
     expect(tr).toEqual(
       new Transform({
         translate: { x: 10, y: 12 },
