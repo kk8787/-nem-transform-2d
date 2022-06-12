@@ -25,7 +25,7 @@ class A {
 }
 
 // Assigning transform properties to a class.
-const B = TransformMixin(A) 
+const B = TransformMixin(A)
 
 const b = new B() // as A & Transform
 
@@ -36,7 +36,9 @@ b.rotate
 ```
 
 ## Transform Class
+
 ### properties
+
 transform
 rotate
 scale
@@ -46,28 +48,31 @@ rotateDeg (getter)
 
 ### methods
 
-#### static 
-decomposeTSR // to decompose a Matrix into a Transform.  (* in the order of transform, scale, rotate)
+#### static
+
+decomposeTSR // to decompose a Matrix into a Transform. (\* in the order of transform, scale, rotate)
 
 etc...
 
 ## Matrix class
 
 ### static
-* methods to create a Transform Matrix.
-translation
-rotation
-rotationDeg
-scale
-skew
-skewDeg
-identity
 
-* multiply
-mul
-compose
+- methods to create a Transform Matrix.
+  translation
+  rotation
+  rotationDeg
+  scale
+  skew
+  skewDeg
+  identity
+
+- multiply
+  mul
+  compose
 
 ### instance methods
+
 point // to apply the matrix to a point.
 points // to apply the matrix to points.
 smooth // rounding number
